@@ -2,6 +2,8 @@
 #include <iostream>
 using namespace std;
 
+int increment_id = 0;
+
 class Book
 {
 private:
@@ -120,6 +122,22 @@ public:
         cin >> rack;
         status = "UnAssigned";
     }
+
+    bool isAvailable()
+    {
+        if (status == "UnAssigned")
+            return true;
+        return false;
+    }
+
+    void setCopy()
+    {
+        status = "Assigned";
+    }
+    int getCopy_id()
+    {
+        return copyId;
+    }
 };
 
 class Members
@@ -182,6 +200,47 @@ public:
     }
 };
 
+class issueRecords
+{
+private:
+    int issueRecordId;
+    int copy_id;
+    int member_id;
+    string issue_date;
+    string return_dueDate;
+    string return_date;
+    float fine_amount;
+
+public:
+    issueRecords(int id, int copy_id, int member_id, string issue_date, string return_dueDate, string return_date, float fine_amount)
+    {
+        this->issueRecordId = id;
+        this->copy_id = copy_id;
+        this->member_id = member_id;
+        this->issue_date = issue_date;
+        this->return_dueDate = return_dueDate;
+        this->fine_amount = fine_amount;
+    }
+    void acceptIssueRecords()
+    {
+        cout << "\nEnter the issue record id: ";
+        cin >> issueRecordId;
+        cout << "\nEnter the issue_date: ";
+        cin >> issue_date;
+        cout << "\nEnter the return due date: ";
+        cin >> return_dueDate;
+        cout << "\nEnter the return date: ";
+        cin >> return_date;
+        cout << "\nEnter the fine_amount: ";
+        cin >> fine_amount;
+    }
+    // Setter
+    void setReturnDate(string return_date)
+    {
+        this->return_date = return_date;
+    }
+};
+
 // Members Funcn
 void addMembers(vector<Members *> &members)
 {
@@ -215,9 +274,37 @@ void displayBooks(vector<Book *> &books)
     }
 }
 
+// checkCopyAvailablity
+
+bool checkCopyAvailablity(int BookId, vector<Copy *> &bookCopys, vector<issueRecords *> &issueRecordsv, int member_id)
+{
+
+    int i;
+    bool copyFound = 0;
+
+    for (i = 0; i < bookCopys.size(); i++)
+    {
+        if (BookId == bookCopys[i]->getId())
+        {
+            if (bookCopys[i]->isAvailable())
+            {
+                copyFound = 1;
+                break;
+            }
+        }
+    }
+    if (copyFound == 0)
+        return false;
+
+    issueRecords *ptr = new issueRecords(increment_id, bookCopys[i]->getCopy_id(), member_id, "30/6/25", "30/6/25", "30/6/25", 65.25);
+    issueRecordsv.push_back(ptr);
+
+    return true;
+}
+
 // Assign Copy To Books
 
-void assignCopyToMember(vector<Members *> &members, vector<Book *> &books, vector<Copy *> &bookCopys)
+void assignCopyToMember(vector<Members *> &members, vector<Book *> &books, vector<Copy *> &bookCopys, vector<issueRecords *> &issueRecordsv)
 {
     // 1. Check If member Exist and is a Member
 
@@ -258,6 +345,12 @@ void assignCopyToMember(vector<Members *> &members, vector<Book *> &books, vecto
         cout << i + 1 << "." << books[i]->getTitle() << endl;
         cout << " Book Id--> " << books[i]->getId() << endl;
     }
+
+    int bookid;
+    cin >> bookid;
+
+    bool isBookAvailableandAssigned = checkCopyAvailablity(bookid, bookCopys, issueRecordsv, id);
+
     return;
 }
 
@@ -280,6 +373,7 @@ int main()
     vector<Members *> members;
     vector<Book *> books;
     vector<Copy *> bookCopys;
+    vector<issueRecords *> issueRecordsv;
 
     while ((ch = MenuDrive()) != 0)
     {
@@ -302,7 +396,7 @@ int main()
         }
         case 4:
         {
-            assignCopyToMember(members, books, bookCopys);
+            assignCopyToMember(members, books, bookCopys, issueRecordsv);
         }
         default:
             break;
