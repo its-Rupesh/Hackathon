@@ -116,6 +116,7 @@ public:
 
     void setCopy()
     {
+        Book::setBook();
         cout << "\nEnter the copy id: ";
         cin >> copyId;
         cout << "\nEnter the rack: ";
@@ -130,7 +131,7 @@ public:
         return false;
     }
 
-    void setCopy()
+    void setCopyasAssigned()
     {
         status = "Assigned";
     }
@@ -234,6 +235,15 @@ public:
         cout << "\nEnter the fine_amount: ";
         cin >> fine_amount;
     }
+    void displayIssueRecords()
+    {
+        cout << "issueRecordId:" << issueRecordId << endl;
+        cout << "copy_id:" << copy_id << endl;
+        cout << "member_id:" << member_id << endl;
+        cout << "issue_date" << issue_date << endl;
+        cout << "return_date:" << return_date << endl;
+        cout << "fine_amount" << fine_amount << endl;
+    }
     // Setter
     void setReturnDate(string return_date)
     {
@@ -278,7 +288,7 @@ void displayBooks(vector<Book *> &books)
 
 bool checkCopyAvailablity(int BookId, vector<Copy *> &bookCopys, vector<issueRecords *> &issueRecordsv, int member_id)
 {
-
+    cout << "W" << endl;
     int i;
     bool copyFound = 0;
 
@@ -289,15 +299,19 @@ bool checkCopyAvailablity(int BookId, vector<Copy *> &bookCopys, vector<issueRec
             if (bookCopys[i]->isAvailable())
             {
                 copyFound = 1;
+                bookCopys[i]->setCopyasAssigned();
                 break;
             }
         }
     }
     if (copyFound == 0)
         return false;
+    cout << "W" << endl;
 
     issueRecords *ptr = new issueRecords(increment_id, bookCopys[i]->getCopy_id(), member_id, "30/6/25", "30/6/25", "30/6/25", 65.25);
     issueRecordsv.push_back(ptr);
+
+    cout << "Book Assigned" << endl;
 
     return true;
 }
@@ -351,7 +365,31 @@ void assignCopyToMember(vector<Members *> &members, vector<Book *> &books, vecto
 
     bool isBookAvailableandAssigned = checkCopyAvailablity(bookid, bookCopys, issueRecordsv, id);
 
+    if (!isBookAvailableandAssigned)
+        cout << "Book Cannot be Assigned" << endl;
+
     return;
+}
+
+void displayRecords(vector<issueRecords *> issueRecordsv)
+{
+    for (int i = 0; i < issueRecordsv.size(); i++)
+    {
+        issueRecordsv[i]->displayIssueRecords();
+    }
+    return;
+}
+
+void dummyData(vector<Copy *> &bookCopys)
+{
+    int i = 2;
+    while (i)
+    {
+        Copy *ptr = new Copy();
+        ptr->setCopy();
+        bookCopys.push_back(ptr);
+        i--;
+    }
 }
 
 int MenuDrive()
@@ -363,6 +401,7 @@ int MenuDrive()
     cout << "2.Display Members" << endl;
     cout << "3.Add Book" << endl;
     cout << "4. Assign Copy To Member" << endl;
+    cout << "5.Display Records" << endl;
     cin >> ch;
     return ch;
 }
@@ -374,6 +413,8 @@ int main()
     vector<Book *> books;
     vector<Copy *> bookCopys;
     vector<issueRecords *> issueRecordsv;
+
+    dummyData(bookCopys);
 
     while ((ch = MenuDrive()) != 0)
     {
@@ -396,7 +437,15 @@ int main()
         }
         case 4:
         {
+            // dummyData(bookCopys);
             assignCopyToMember(members, books, bookCopys, issueRecordsv);
+
+            break;
+        }
+        case 5:
+        {
+            displayRecords(issueRecordsv);
+            break;
         }
         default:
             break;
