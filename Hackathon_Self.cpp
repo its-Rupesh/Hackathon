@@ -1,4 +1,6 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <ctime>
 using namespace std;
 
 class Books
@@ -173,7 +175,7 @@ private:
     string name;
     string email;
     string phone;
-    string nextPayement_dueDate;
+    time_t nextPayement_dueDate;
     string paymentStatus;
 
 public:
@@ -189,8 +191,26 @@ public:
         cin >> email;
         cout << "Enter Member phone:";
         cin >> phone;
-        cout << "Enter Member nextPayement_dueDate:";
-        cin >> nextPayement_dueDate;
+        cout << "Enter Member nextPayement_dueDate";
+
+        int date;
+        int month;
+        int year;
+
+        cout << "\nEnter Date: ";
+        cin >> date;
+        cout << "Enter Month: ";
+        cin >> month;
+        cout << "Enter Year: ";
+        cin >> year;
+
+        tm t = {};
+        t.tm_mday = date;
+        t.tm_mon = month - 1;
+        t.tm_year = year - 1900;
+
+        nextPayement_dueDate = mktime(&t);
+
         cout << "Enter Member paymentStatus:" << endl;
 
         int ch;
@@ -210,7 +230,10 @@ public:
         cout << "name: " << name << endl;
         cout << "email: " << email << endl;
         cout << "phone: " << phone << endl;
-        cout << "nextPayement_dueDate: " << nextPayement_dueDate << endl;
+
+        tm *t = localtime(&nextPayement_dueDate);
+
+        cout << "nextPayement_dueDate: " << t->tm_mday << "/" << t->tm_mon + 1 << "/" << t->tm_year + 1900 << endl;
         cout << "paymentStatus: " << paymentStatus << endl;
     }
 
@@ -442,6 +465,7 @@ int MenuDrive()
     cin >> ch;
     return ch;
 }
+
 int main()
 {
     int ch;
