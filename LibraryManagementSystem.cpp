@@ -18,7 +18,7 @@ private:
 public:
     Books() : book_id(0), title(""), author(""), subject(""), isbn(""), price(0.00) {}
 
-    Books(int id, string title, string author, string isbn, float price)
+    Books(int id, string title, string author, string subject, string isbn, float price)
     {
         book_id = id;
         this->title = title;
@@ -121,17 +121,21 @@ public:
 class Copys : public Books
 {
 private:
+    static int counter;
     int copyId;
     string rack;
     string status;
 
 public:
-    Copys() : copyId(0), rack(""), status("") {}
-    Copys(int Book_id, string title, string author, string isbn, float price, int copy_id, string rack)
-        : Books(Book_id, title, author, isbn, price)
+    Copys() : rack(""), status("")
     {
-        this->copyId = copy_id;
+        copyId++;
+    }
+    Copys(int Book_id, string title, string author, string subject, string isbn, float price, string rack)
+        : Books(Book_id, title, author, subject, isbn, price)
+    {
         this->rack = rack;
+        copyId = ++counter;
         this->status = "UnAssigned";
     }
 
@@ -146,8 +150,6 @@ public:
     void setCopy()
     {
         Books::setBook();
-        cout << "\nEnter the copy id: ";
-        cin >> copyId;
         cout << "\nEnter the rack: ";
         cin >> rack;
         status = "UnAssigned";
@@ -173,10 +175,12 @@ public:
         return copyId;
     }
 };
+int Copys::counter = 0;
 
 class Members
 {
 private:
+    static int counter;
     int id;
     string name;
     string email;
@@ -185,49 +189,53 @@ private:
     string paymentStatus;
 
 public:
+    Members()
+    {
+        paymentStatus = "Unpaid";
+        nextPayement_dueDate = 0;
+        id = ++counter;
+    }
     // Setters
     void accept_record()
     {
         cout << endl;
-        cout << "Enter Member member_Id:";
-        cin >> id;
         cout << "Enter Member Name:";
         cin >> name;
         cout << "Enter Member email:";
         cin >> email;
         cout << "Enter Member phone:";
         cin >> phone;
-        cout << "Enter Member nextPayement_dueDate";
+        // cout << "Enter Member nextPayement_dueDate";
 
-        int date;
-        int month;
-        int year;
+        // int date;
+        // int month;
+        // int year;
 
-        cout << "\nEnter Date: ";
-        cin >> date;
-        cout << "Enter Month: ";
-        cin >> month;
-        cout << "Enter Year: ";
-        cin >> year;
+        // cout << "\nEnter Date: ";
+        // cin >> date;
+        // cout << "Enter Month: ";
+        // cin >> month;
+        // cout << "Enter Year: ";
+        // cin >> year;
 
-        tm t = {};
-        t.tm_mday = date;
-        t.tm_mon = month - 1;
-        t.tm_year = year - 1900;
+        // tm t = {};
+        // t.tm_mday = date;
+        // t.tm_mon = month - 1;
+        // t.tm_year = year - 1900;
 
-        nextPayement_dueDate = mktime(&t);
+        // nextPayement_dueDate = mktime(&t);
 
-        cout << "Enter Member paymentStatus:" << endl;
+        // cout << "Enter Member paymentStatus:" << endl;
 
-        int ch;
-        cout << "1.Paid" << endl;
-        cout << "2.Unpaid" << endl;
-        cin >> ch;
+        // int ch;
+        // cout << "1.Paid" << endl;
+        // cout << "2.Unpaid" << endl;
+        // cin >> ch;
 
-        if (ch == 1)
-            paymentStatus = "Paid";
-        else
-            paymentStatus = "Unpaid";
+        // if (ch == 1)
+        //     paymentStatus = "Paid";
+        // else
+        //     paymentStatus = "Unpaid";
     }
 
     void display_record()
@@ -237,10 +245,17 @@ public:
         cout << "email: " << email << endl;
         cout << "phone: " << phone << endl;
 
-        tm *t = localtime(&nextPayement_dueDate);
-
-        cout << "nextPayement_dueDate: " << t->tm_mday << "/" << t->tm_mon + 1 << "/" << t->tm_year + 1900 << endl;
-        cout << "paymentStatus: " << paymentStatus << endl;
+        if (paymentStatus == "Unpaid")
+        {
+            cout << "paymentStatus: " << paymentStatus << endl;
+            cout << "nextPayement_dueDate:No Payement Has Done Yet!!!" << endl;
+        }
+        else
+        {
+            tm *t = localtime(&nextPayement_dueDate);
+            cout << "paymentStatus: " << paymentStatus << endl;
+            cout << "nextPayement_dueDate: " << t->tm_mday << "/" << t->tm_mon + 1 << "/" << t->tm_year + 1900 << endl;
+        }
     }
 
     int getId()
@@ -254,12 +269,6 @@ public:
             ans = 1;
         return ans;
     }
-    /*
-    string name;
-    string email;
-    string phone;
-    */
-
     string getName()
     {
         return name;
@@ -268,11 +277,18 @@ public:
     {
         return email;
     }
+    void setPaymentStatus()
+    {
+        paymentStatus = "Paid";
+    }
 };
+
+int Members::counter = 0;
 
 class issueRecords
 {
 private:
+    static int counter;
     int issueRecordId;
     int copy_id;
     int member_id;
@@ -284,17 +300,18 @@ private:
 public:
     issueRecords()
     {
+        issueRecordId = ++counter;
         return_date = 0;
     }
-    issueRecords(int id, int copy_id, int member_id, time_t issue_date, time_t return_dueDate, float fine_amount)
+    issueRecords(int copy_id, int member_id, time_t issue_date, time_t return_dueDate, float fine_amount)
     {
-        this->issueRecordId = id;
         this->copy_id = copy_id;
         this->member_id = member_id;
         this->issue_date = issue_date;
         this->return_dueDate = return_dueDate;
         this->fine_amount = fine_amount;
         this->return_date = 0;
+        issueRecordId = ++counter;
     }
     void acceptIssueRecords()
     {
@@ -309,7 +326,7 @@ public:
     }
     void displayIssueRecords()
     {
-        cout << "issueRecordId:" << issueRecordId << endl;
+        cout << "\nissueRecordId:" << issueRecordId << endl;
         cout << "copy_id:" << copy_id << endl;
         cout << "member_id:" << member_id << endl;
 
@@ -329,11 +346,17 @@ public:
              << (return_due_time.tm_year + 1900)
              << endl;
 
-        cout << "return_date:" << (return_date_time.tm_mday) << "/"
-             << (return_date_time.tm_mon + 1) << "/"
-             << (return_date_time.tm_year + 1900)
-             << endl;
-
+        if (return_date == 0)
+        {
+            cout << "Member Has Not yet Returned Book!!.. " << endl;
+        }
+        else
+        {
+            cout << "return_date:" << (return_date_time.tm_mday) << "/"
+                 << (return_date_time.tm_mon + 1) << "/"
+                 << (return_date_time.tm_year + 1900)
+                 << endl;
+        }
         cout << "fine_amount:" << fine_amount << endl;
     }
 
@@ -364,6 +387,83 @@ public:
     }
 };
 
+int issueRecords::counter = 0;
+
+class Payments
+{
+private:
+    static int counter;
+    int payment_id;
+    int member_id;
+    float amount;
+    string type;
+    time_t transaction_time;
+    time_t nextpayment_dueDate;
+
+public:
+    Payments()
+    {
+        payment_id = ++counter;
+    }
+    void accept_records()
+    {
+        cout << "Enter Member_Id:";
+        cin >> member_id;
+        cout << "Enter Amount:";
+        cin >> amount;
+
+        int n;
+        cout << "Choose Type of Transaction" << endl;
+        cout << "1.Online \n2.Cash" << endl;
+        cout << "Enter type:";
+        cin >> n;
+
+        if (n == 2)
+            type = "Cash";
+        else
+            type = "Online";
+
+        time_t now = time(0); // current date
+
+        tm temp = *localtime(&now); // convert to tm (copy)
+        temp.tm_mday += 30;         // add 7 days
+
+        time_t nextPay_dueDate = mktime(&temp); // convert back
+
+        transaction_time = now;
+        nextpayment_dueDate = nextPay_dueDate;
+    }
+    void display_records()
+    {
+
+        cout << "\npayement_id:" << payment_id << endl;
+        cout << "Member_Id:" << member_id << endl;
+        cout << "Amount:" << amount << endl;
+        cout << "Type:" << type << endl;
+
+        tm transaction_Time = *localtime(&transaction_time);
+        tm next_Transaction = *localtime(&nextpayment_dueDate);
+
+        cout
+            << "Payement_Date:"
+            << transaction_Time.tm_mday << "/"
+            << (transaction_Time.tm_mon + 1)
+            << "/" << (transaction_Time.tm_year + 1900)
+            << endl;
+
+        cout << "Next Payement due date:" << (next_Transaction.tm_mday) << "/"
+             << (next_Transaction.tm_mon + 1) << "/"
+             << (next_Transaction.tm_year + 1900)
+             << endl;
+    }
+    int getpayment_id()
+    {
+        return payment_id;
+    }
+};
+
+int Payments::counter = 0;
+
 namespace booksFuncn
 {
     // Add Books
@@ -374,7 +474,7 @@ namespace booksFuncn
         books.push_back(ptr);
     }
     // Display Books
-    void displayBooks(vector<Books *> books)
+    void displayBooks(vector<Books *> &books)
     {
         for (int i = 0; i < books.size(); i++)
         {
@@ -383,7 +483,7 @@ namespace booksFuncn
         return;
     }
     // Display Book Title and its id;
-    void displayBooksTitleandId(vector<Books *> books)
+    void displayBooksTitleandId(vector<Books *> &books)
     {
         for (int i = 0; i < books.size(); i++)
         {
@@ -404,7 +504,7 @@ namespace MemberFuncn
         members.push_back(ptr);
     }
     // Display Members
-    void displayMembers(vector<Members *> members)
+    void displayMembers(vector<Members *> &members)
     {
         cout << endl;
         for (int i = 0; i < members.size(); i++)
@@ -415,7 +515,7 @@ namespace MemberFuncn
         return;
     }
 
-    bool checkMemberisPresent(vector<Members *> members, int member_id)
+    bool checkMemberisPresent(vector<Members *> &members, int member_id)
     {
         bool ans = 0;
         for (int i = 0; i < members.size(); i++)
@@ -433,7 +533,7 @@ namespace MemberFuncn
 namespace CopyFuncn
 {
     // Add Books
-    void addCopy(vector<Books *> books, vector<Copys *> &booksCopy)
+    void addCopy(vector<Books *> &books, vector<Copys *> &booksCopy)
     {
         // Display Books Title with Book id
         cout << endl;
@@ -480,8 +580,7 @@ namespace CopyFuncn
         static int copy_id = 1;
 
         // int Book_id, string title, string author, string isbn, float price, int copy_id, string rack
-        Copys *ptr = new Copys(books[i]->getId(), books[i]->getTitle(), books[i]->getAuthor(), books[i]->getIsbn(), books[i]->getPrice(), copy_id, rack);
-        copy_id++;
+        Copys *ptr = new Copys(books[i]->getId(), books[i]->getTitle(), books[i]->getAuthor(), books[i]->getSubject(), books[i]->getIsbn(), books[i]->getPrice(), rack);
 
         booksCopy.push_back(ptr);
 
@@ -489,7 +588,7 @@ namespace CopyFuncn
     }
 
     // Display Books
-    void displayCopyBooks(vector<Copys *> copys)
+    void displayCopyBooks(vector<Copys *> &copys)
     {
         for (int i = 0; i < copys.size(); i++)
         {
@@ -569,18 +668,16 @@ namespace AssignCopiesFuncn
 
         time_t return_dueDate = mktime(&temp); // convert back
 
-        static int issueId = 1;
-
         // int id, int copy_id, int member_id, time_t issue_date, time_t return_dueDate, float fine_amount
-        issueRecords *ptr_fun = new issueRecords(issueId, bookCopys[j]->getCopy_id(), member_id, now, return_dueDate, 0.0);
+        issueRecords *ptr_fun = new issueRecords(bookCopys[j]->getCopy_id(), member_id, now, return_dueDate, 0.0);
 
         issueRecordsv.push_back(ptr_fun);
 
-        issueId++;
         return;
     }
 }
-void displayIssueRecords(vector<issueRecords *> issueRecordsv)
+
+void displayIssueRecords(vector<issueRecords *> &issueRecordsv)
 {
     for (int i = 0; i < issueRecordsv.size(); i++)
     {
@@ -595,25 +692,7 @@ void return_Copy(vector<Copys *> &bookCopys, vector<Members *> &members, vector<
     cout << "Enter Copy_id:";
     cin >> copy_id;
 
-    int day;
-    int month;
-    int year;
-
-    time_t return_date;
-
-    cout << "Return Date:";
-    cin >> day;
-    cout << "Return Month:";
-    cin >> month;
-    cout << "Return Year:";
-    cin >> year;
-
-    tm t = {};
-    t.tm_mday = day;
-    t.tm_mon = month - 1;
-    t.tm_year = year - 1900;
-
-    return_date = mktime(&t);
+    time_t now = time(0);
 
     for (int i = 0; i < bookCopys.size(); i++)
     {
@@ -638,7 +717,7 @@ void return_Copy(vector<Copys *> &bookCopys, vector<Members *> &members, vector<
         cout << "No Record Found" << endl;
         return;
     }
-    issueRecordsv[i]->setReturn_date(return_date);
+    issueRecordsv[i]->setReturn_date(now);
 
     float total_fine = 0.0;
 
@@ -657,7 +736,7 @@ void return_Copy(vector<Copys *> &bookCopys, vector<Members *> &members, vector<
 }
 
 // bookCopys, members, books, issueRecordsv
-void makeReports(vector<Copys *> &bookCopysv, vector<Members *> &members, vector<Books *> &books, vector<issueRecords *> issueRecordsv)
+void makeReports(vector<Copys *> &bookCopysv, vector<Members *> &members, vector<Books *> &books, vector<issueRecords *> &issueRecordsv)
 {
     ofstream fout("Member_Reports.txt", ios::app);
     fout << "Members Which Have Taken Membership" << endl;
@@ -671,27 +750,46 @@ void makeReports(vector<Copys *> &bookCopysv, vector<Members *> &members, vector
     }
     fout.close();
 
-    ofstream fout("Book_Reports.txt", ios::app);
-    fout << "Copies Which Are Already Assigned" << endl;
+    ofstream fout2("Book_Reports.txt", ios::app);
+    fout2 << "Copies Which Are Already Assigned" << endl;
 
     for (int i = 0; i < bookCopysv.size(); i++)
     {
         if (!bookCopysv[i]->isAvailable())
         {
-            fout << "Copy_id: " << bookCopysv[i]->getCopy_id() << "," << "Book_Title:" << bookCopysv[i]->getTitle() << "," << "Book_id: " << bookCopysv[i]->getId() << endl;
+            fout2 << "Copy_id: " << bookCopysv[i]->getCopy_id() << "," << "Book_Title:" << bookCopysv[i]->getTitle() << "," << "Book_id: " << bookCopysv[i]->getId() << endl;
         }
     }
-    fout.close();
+    fout2.close();
 
-    ofstream fout("Fine_Reports.txt", ios::app);
-    fout << "Total Fine Collected" << endl;
+    ofstream fout3("Fine_Reports.txt", ios::app);
+    fout3 << "Total Fine Collected" << endl;
     float fine = 0;
     for (int i = 0; i < issueRecordsv.size(); i++)
     {
         fine += issueRecordsv[i]->getFine();
     }
-    fout << "Total Fine: " << fine;
-    fout.close();
+    fout3 << "Total Fine: " << fine;
+    fout3.close();
+    return;
+}
+
+void makePayments(vector<Payments *> &payments, vector<Members *> &members)
+{
+
+    Payments *ptr = new Payments();
+    ptr->accept_records();
+    payments.push_back(ptr);
+
+    for (int i = 0; i < members.size(); i++)
+    {
+        if (ptr->getpayment_id() == members[i]->getId())
+        {
+            members[i]->setPaymentStatus();
+            break;
+        }
+    }
+    ptr->display_records();
     return;
 }
 
@@ -710,6 +808,7 @@ int MenuDrive()
     cout << "8.Display Issue Records" << endl;
     cout << "9.Return Copy" << endl;
     cout << "10.Reports" << endl;
+    cout << "11.Payments" << endl;
     cout << endl;
     cout << "Enter Choice: ";
     cin >> ch;
@@ -724,6 +823,7 @@ int main()
     vector<Copys *> bookCopys;
     vector<Members *> members;
     vector<issueRecords *> issueRecordsv;
+    vector<Payments *> payments;
 
     // vector<issueRecords *> issueRecordsv;
 
@@ -781,6 +881,11 @@ int main()
         case 10:
         {
             makeReports(bookCopys, members, books, issueRecordsv);
+            break;
+        }
+        case 11:
+        {
+            makePayments(payments, members);
             break;
         }
         default:
